@@ -48,6 +48,12 @@ mappoly <- borders("world",
 # draw the plt
 gp <- ggplot(wasploc[!is.na(Range)],
              aes(x = Long, y = Lat, colour = species, shape = Range)) +
+    coord_quickmap()
+
+saveRDS(gp, "output/plot_data/map_plot.Rds")
+saveRDS(mappoly, "output/plot_data/map_poly.Rds")
+
+gp <- gp +
     theme_minimal(base_size = 8,
                   base_family = "Helvetica") +
     theme(legend.text = element_text(face = "italic"),
@@ -56,7 +62,6 @@ gp <- ggplot(wasploc[!is.na(Range)],
           axis.text = element_blank(),
           panel.grid = element_blank()) +
     xlab(NULL) + ylab(NULL) +
-    coord_quickmap() +
     facet_wrap(~ Range, ncol = 1, strip.position = "left") +
     scale_colour_viridis_d() +
     scale_shape_manual(values = c(16, 17), guide = FALSE) +
@@ -68,7 +73,6 @@ gp <- ggplot(wasploc[!is.na(Range)],
                size = 1)
 
 
-saveRDS(gp, "output/gp.Rds")
 
 PtToMm <- function(x){
     grid::convertUnit(grid::unit(x, "pt"), "mm", valueOnly = TRUE)
