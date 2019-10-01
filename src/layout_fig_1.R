@@ -71,7 +71,7 @@ spec_plot <- spec_tree +
                    y = 6,
                    offset = 0.1) +
     MyCladelab("Formicidae", 35) +
-    MyCladelab("Anthophila", 29) +
+    MyCladelab("Apoidea", 29) +
     MyCladelab("Vespidae", 45)
 
 # layout

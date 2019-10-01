@@ -4,12 +4,12 @@ library(data.table)
 library(gtools)
 library(future.apply)
 
-plan(multiprocess)
+plan(multiprocess(workers = 4))
 options(future.globals.maxSize = +Inf)
 
-gene_counts_wide <- fread("data/Orthogroups.GeneCount.tsv",
-                          nrows = 10)
+gene_counts_wide <- fread("data/Orthogroups.GeneCount.tsv")
 gene_counts_wide[, Total := NULL]
+gene_counts_wide[, Dmel := NULL]
 gene_counts <- melt(gene_counts_wide,
                     id.vars = "Orthogroup",
                     variable.name = "spec_code",
