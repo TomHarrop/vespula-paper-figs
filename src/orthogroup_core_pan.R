@@ -4,7 +4,8 @@ library(data.table)
 library(gtools)
 library(future.apply)
 
-plan(multiprocess(workers = 4))
+#plan(multiprocess(workers = 4))
+plan(multiprocess)
 options(future.globals.maxSize = +Inf)
 
 gene_counts_wide <- fread("data/Orthogroups.GeneCount.tsv")

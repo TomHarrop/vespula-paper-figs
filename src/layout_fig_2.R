@@ -47,10 +47,21 @@ ideogram <- ggplot(assembly_pd, aes(x = name,
 
 
 # synteny plot
-synteny <- draw_image("data/img/synteny.png",
-                      height = 1,
-                      clip = "on")
-
+syn_file <- "data/img/Fig 2 size.png"
+# syn_file <- magick::image_read_svg("data/img/Fig 2 size.svg")
+synteny <- draw_image(syn_file,
+                      x = 0.5,
+                      y = 0.5,
+                      hjust = 0.5,
+                      vjust = 0.5)
+my_ggdraw <- function(draw_offset) {
+    ggdraw(xlim = c(0 - draw_offset, 1 + draw_offset),
+           ylim = c(0 - draw_offset, 1 + draw_offset),
+           clip = "on")
+}
+draw_offset <- 0
+synteny_draw <- my_ggdraw(draw_offset) + synteny
+    
 
 # venn diagram
 vesp_ortho_list <- readRDS("output/plot_data/vesp_ortho_list.Rds")
@@ -80,15 +91,8 @@ pc_plot <- ggplot(pan_core, aes(x = number_of_species,
 
 
 # layout
-my_ggdraw <- function(draw_offset) {
-    ggdraw(xlim = c(0 - draw_offset, 1 + draw_offset),
-           ylim = c(0 - draw_offset, 1 + draw_offset),
-           clip = "on")
-}
-draw_offset <- 0
-
 col_r <- plot_grid(
-    my_ggdraw(draw_offset) + synteny,
+    synteny_draw,
     og_upset,
     ncol = 1,
     labels = c("B", "C"),
@@ -118,3 +122,12 @@ ggsave("figs/figure_2.pdf",
        width = 170,
        height = 225 * 3/4,
        units = "mm")
+
+# ggsave("figs/figure_2.png",
+#        cowplot,
+#        device = "png",
+#        dpi = 300,
+#        width = 170,
+#        height = 225 * 3/4,
+#        units = "mm")
+

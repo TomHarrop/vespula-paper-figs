@@ -153,52 +153,57 @@ saveRDS(tree_plots, "output/plot_data/tree_plots.Rds")
 # PLOT ALL TREES #
 ##################
 
-# og_files <- list.files("data/trees", pattern = "OG.*_tree.txt")
-# all_ogs <- sub("_tree.txt", "", og_files)
-# names(all_ogs) <- all_ogs
-# all_trees <- lapply(all_ogs, GetTree)
-# all_annot <- GetAnnot(all_trees)
-# 
-# # prune
-# all_annot[, extracted_prot_id := gsub(
-#   paste0(spec_code, "_?"),
-#   "",
-#   gene_name),
-#   by = gene_name]
-# 
-# drop1 <- all_annot[(!spec_code %in% c(wasp_specs, "Dmel")) &
-#                      (!extracted_prot_id %in% plottable),
-#                    unique(tip_label)]
-# 
-# # ok, but need to deal with Dros (not in refseq)
-# dmel_droptable <- all_annot[spec_code == "Dmel", .(
-#   tip_label,
-#   Name,
-#   short_name = gsub("-P[[:upper:]]$", "", Name))]
-# setorder(dmel_droptable, short_name)           
-# drop3 <- dmel_droptable[duplicated(dmel_droptable, by = "short_name"),
-#                         unique(tip_label)]
-# 
-# #drop the non-species of interest
-# drop2 <- all_annot[!spec_code %in% specs_to_plot, unique(tip_label)]
-# 
-# all_pruned <- lapply(all_trees, drop.tip, tip = c(drop1, drop2, drop3))
-# class(all_pruned) <- "multiPhylo"
-# 
-# all_plots <- lapply(all_pruned, PlotTree, annotation = all_annot)
-# 
-# PrintPlot <- function(plot, plot_name) {
-#   plot_file <- paste0("output/trees/", plot_name, ".pdf")
-#   ggsave(plot_file,
-#          plot,
-#          device = cairo_pdf,
-#          width = 10, 
-#          height = 7.5,
-#          units = "in")
-# }
-# 
-# lapply(names(all_plots), function(x)
-#   PrintPlot(all_plots[[x]], x))
-# 
-# 
-# print(all_trees[["OG0000273"]] + xlim(c(0, 2.5))) 
+og_files <- list.files("data/trees",
+                       pattern = "OG.*_tree.txt",
+                       recursive = FALSE)
+all_ogs <- sub("_tree.txt", "", og_files)
+names(all_ogs) <- all_ogs
+all_trees <- lapply(all_ogs, GetTree)
+all_annot <- GetAnnot(all_trees)
+
+# prune
+all_annot[, extracted_prot_id := gsub(
+  paste0(spec_code, "_?"),
+  "",
+  gene_name),
+  by = gene_name]
+
+drop1 <- all_annot[(!spec_code %in% c(wasp_specs, "Dmel")) &
+                     (!extracted_prot_id %in% plottable),
+                   unique(tip_label)]
+
+# ok, but need to deal with Dros (not in refseq)
+dmel_droptable <- all_annot[spec_code == "Dmel", .(
+  tip_label,
+  Name,
+  short_name = gsub("-P[[:upper:]]$", "", Name))]
+setorder(dmel_droptable, short_name)
+drop3 <- dmel_droptable[duplicated(dmel_droptable, by = "short_name"),
+                        unique(tip_label)]
+
+#drop the non-species of interest
+drop2 <- all_annot[!spec_code %in% specs_to_plot, unique(tip_label)]
+
+all_pruned <- lapply(all_trees, drop.tip, tip = c(drop1, drop2, drop3))
+class(all_pruned) <- "multiPhylo"
+
+all_plots <- lapply(all_pruned[all_pruned != "NULL"],
+                    PlotTree,
+                    annotation = all_annot,
+                    palette = viridis::viridis_pal()(5))
+
+PrintPlot <- function(plot, plot_name) {
+  plot_file <- paste0("output/trees/", plot_name, ".pdf")
+  ggsave(plot_file,
+         plot,
+         device = cairo_pdf,
+         width = 10,
+         height = 7.5,
+         units = "in")
+}
+
+lapply(names(all_plots), function(x)
+  PrintPlot(all_plots[[x]], x))
+
+
+print(all_trees[["OG0000273"]] + xlim(c(0, 2.5)))

@@ -6,13 +6,13 @@ library(ggplot2)
 library(ggtree)
 
 # species
-germanica <- draw_image("data/img/germanica.jpg",
+germanica <- draw_image("data/img/germanica3_cropped.jpg",
                         height = 1,
                         clip = "on")
-vulgaris <- draw_image("data/img/vulgaris.jpg",
+vulgaris <- draw_image("data/img/vulgaris_cropped2.jpg",
                        height = 1,
                        clip = "on")
-pensylvanica <- draw_image("data/img/pensylvanica.jpg",
+pensylvanica <- draw_image("data/img/pensylvanica_rotated.jpg",
                            height = 1,
                            clip = "on")
 
@@ -80,9 +80,8 @@ my_ggdraw <- function(draw_offset) {
            ylim = c(0 - draw_offset, 1 + draw_offset),
            clip = "on")
 }
-my_ggdraw() + germanica
 
-draw_offset <- 1/10
+draw_offset <- 1/100
 
 row1 <- plot_grid(
     my_ggdraw(draw_offset) + germanica, 
@@ -91,6 +90,7 @@ row1 <- plot_grid(
     ncol = 3,
     labels = c("A", "B", "C"),
     label_fontfamily = "Helvetica",
+    label_colour = "white",
     label_size = 10)
 
 row2 <- plot_grid(
@@ -106,7 +106,7 @@ row2 <- plot_grid(
 cowplot <- plot_grid(row1,
                      row2,
                      ncol = 1,
-                     rel_heights = c(0.5, 1))
+                     rel_heights = c(4, 10))
 
 ggsave("figs/figure_1.pdf",
        cowplot,
