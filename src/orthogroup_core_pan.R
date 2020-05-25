@@ -27,14 +27,13 @@ setnames(gene_counts, "spec_id", "spec_code")
 
 setkey(gene_counts, spec_code)
 
-GetComboCounts <- function(gene_counts, spec_no) {
+GetComboCounts <- function(gene_counts, spec_no, out_csv) {
     print(date())
     print(paste("spec_no", spec_no))
-    gc(TRUE)
     comb_res <- gene_counts[, combinations(
-        length(as.character(unique(spec_code))),
+        length(unique(spec_code)),
         spec_no,
-        as.character(unique(spec_code)),
+        unique(spec_code),
         set = TRUE,
         repeats.allowed = FALSE)]
     my_count_list <- future_apply(
@@ -53,14 +52,12 @@ GetComboCounts <- function(gene_counts, spec_no) {
                             n_pan = sum(pan))]})
     
     my_counts <- rbindlist(my_count_list, fill = TRUE)
+    fwrite(my_counts, out_csv, append = TRUE, compress = "gzip")
     gc(TRUE)
-    return(my_counts)}
+}
 
+out_csv <- "output/plot_data/pan_core_counts.csv.gz"
 number_of_specs <- gene_counts[, length(unique(spec_code))]
-
-all_count_list <- lapply(rev(1:(number_of_specs - 1)), function(x)
-    GetComboCounts(gene_counts, x))
-all_counts <- rbindlist(all_count_list, fill = TRUE)
-
-saveRDS(all_counts, "output/plot_data/pan_core_counts.Rds")
+lapply(rev(1:(number_of_specs - 1)), function(x)
+    GetComboCounts(gene_counts, x, out_csv))
 
