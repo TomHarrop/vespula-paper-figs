@@ -20,6 +20,8 @@ gene_counts[, has_gene := gene_count > 0]
 # convert spec_code to numeric (save mem?)
 gene_counts[, spec_id := as.numeric(as.factor(spec_code))]
 spec_code_to_id <- unique(gene_counts[, .(spec_code, spec_id)])
+fwrite(spec_code_to_id, "output/plot_data/spec_code_to_id.csv")
+
 gene_counts[, spec_code := NULL]
 setnames(gene_counts, "spec_id", "spec_code")
 
@@ -61,5 +63,4 @@ all_count_list <- lapply(rev(1:(number_of_specs - 1)), function(x)
 all_counts <- rbindlist(all_count_list, fill = TRUE)
 
 saveRDS(all_counts, "output/plot_data/pan_core_counts.Rds")
-fwrite(spec_code_to_id, "output/plot_data/spec_code_to_id.csv")
 
