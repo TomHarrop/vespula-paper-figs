@@ -4,7 +4,7 @@ library(data.table)
 library(gtools)
 library(future.apply)
 
-plan(multiprocess(workers = 50))
+plan(multiprocess(workers = 100))
 #plan(multiprocess)
 options(future.globals.maxSize = +Inf)
 
@@ -19,6 +19,7 @@ gene_counts[, has_gene := gene_count > 0]
 setkey(gene_counts, spec_code)
 
 GetComboCounts <- function(gene_counts, spec_no) {
+    print(date())
     print(paste("spec_no", spec_no))
     comb_res <- gene_counts[, combinations(
         length(as.character(unique(spec_code))),
