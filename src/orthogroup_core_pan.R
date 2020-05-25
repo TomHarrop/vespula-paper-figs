@@ -10,7 +10,7 @@ options(future.globals.maxSize = +Inf)
 
 gene_counts_wide <- fread("data/Orthogroups.GeneCount.final.tsv")
 gene_counts_wide[, Total := NULL]
-gene_counts_wide[, Dmel := NULL]
+gene_counts_wide[, Drosophila_melanogaster := NULL]
 gene_counts <- melt(gene_counts_wide,
                     id.vars = "Orthogroup",
                     variable.name = "spec_code",
