@@ -16,11 +16,19 @@ gene_counts <- melt(gene_counts_wide,
                     variable.name = "spec_code",
                     value.name = "gene_count")
 gene_counts[, has_gene := gene_count > 0]
+
+# convert spec_code to numeric (save mem?)
+gene_counts[, spec_id := as.numeric(as.factor(spec_code))]
+spec_code_to_id <- unique(gene_counts[, .(spec_code, spec_id)])
+gene_counts[, spec_code := NULL]
+setnames(gene_counts, "spec_id", "spec_code")
+
 setkey(gene_counts, spec_code)
 
 GetComboCounts <- function(gene_counts, spec_no) {
     print(date())
     print(paste("spec_no", spec_no))
+    gc(TRUE)
     comb_res <- gene_counts[, combinations(
         length(as.character(unique(spec_code))),
         spec_no,
@@ -43,6 +51,7 @@ GetComboCounts <- function(gene_counts, spec_no) {
                             n_pan = sum(pan))]})
     
     my_counts <- rbindlist(my_count_list, fill = TRUE)
+    gc(TRUE)
     return(my_counts)}
 
 number_of_specs <- gene_counts[, length(unique(spec_code))]
@@ -52,3 +61,5 @@ all_count_list <- lapply(rev(1:(number_of_specs - 1)), function(x)
 all_counts <- rbindlist(all_count_list, fill = TRUE)
 
 saveRDS(all_counts, "output/plot_data/pan_core_counts.Rds")
+fwrite(spec_code_to_id, "output/plot_data/spec_code_to_id.csv")
+
