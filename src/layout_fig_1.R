@@ -59,10 +59,27 @@ MyCladelab <- function(my_lab, my_node) {
     )
 }
 
+# set up tip colours
+vcols <- structure(viridisLite::viridis(3),
+                   names = c("Vespula germanica",
+                             "Vespula pensylvanica",
+                             "Vespula vulgaris"))
+
+tree_names <- spec_tree$data$spec_name
+missing_names <- tree_names[!is.na(tree_names) & !tree_names %in% names(vcols)]
+
+all_cols <- c(vcols,
+              structure(rep(NA, length(missing_names)),
+                        names = missing_names))
+
 spec_plot <- spec_tree +
     theme(text = element_text(family = "Helvetica")) +
     geom_tree(size = 0.5) +
-    geom_tiplab(aes(label = spec_name),
+    scale_colour_manual(values = all_cols,
+                        na.value = "black",
+                        guide = FALSE) +
+    geom_tiplab(aes(label = spec_name,
+                    colour = spec_name),
                 size = 2.5,
                 fontface = "italic") + 
     geom_treescale(fontsize = 2,
@@ -70,9 +87,9 @@ spec_plot <- spec_tree +
                    x = 0,
                    y = 6,
                    offset = 0.1) +
-    MyCladelab("Formicidae", 35) +
-    MyCladelab("Apoidea", 29) +
-    MyCladelab("Vespidae", 45)
+    MyCladelab("Formicidae", 36) +
+    MyCladelab("Apoidea", 31) +
+    MyCladelab("Vespidae", 46)
 
 # layout
 my_ggdraw <- function(draw_offset) {

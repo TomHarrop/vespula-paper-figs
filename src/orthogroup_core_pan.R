@@ -4,9 +4,6 @@ library(data.table)
 library(gtools)
 library(future.apply)
 
-plan(multiprocess(workers = 100))
-#plan(multiprocess)
-options(future.globals.maxSize = +Inf)
 
 gene_counts_wide <- fread("data/Orthogroups.GeneCount.final.tsv")
 gene_counts_wide[, Total := NULL]
@@ -53,11 +50,39 @@ GetComboCounts <- function(gene_counts, spec_no, out_csv) {
     
     my_counts <- rbindlist(my_count_list, fill = TRUE)
     fwrite(my_counts, out_csv, append = TRUE, compress = "gzip")
+    rm(comb_res, my_count_list, my_counts)
     gc(TRUE)
 }
 
 out_csv <- "output/plot_data/pan_core_counts.csv.gz"
-number_of_specs <- gene_counts[, length(unique(spec_code))]
+
+# if there's already a table there, we're going to append to it, so find out
+# where to start
+if (file.exists(out_csv)){
+    number_of_specs <- fread(cmd = paste("zcat",
+                                         out_csv,
+                                         "| cut -d',' -f1 | sort | uniq -c"))[
+                                             , as.integer(min(V2))]
+    gc(TRUE)
+} else {
+    # otherwise we need to do all the comparisons
+    number_of_specs <- gene_counts[, length(unique(spec_code))]    
+}
+
+print(paste("Starting from spec_no", number_of_specs - 1))
+
+# try to handle amount of memory - it's split across cores, so need to use
+# fewer cores when number_of_specs results in a lot of comparisons.
+if (number_of_specs < 20 & number_of_specs > 10){
+    plan(multiprocess(workers = 100))    
+} else if(number_of_specs < 10) {
+    plan(multiprocess(workers = 50))
+} else {
+    plan(multiprocess(workers = 20))
+}
+
+options(future.globals.maxSize = +Inf)
+
+# runtime
 lapply(rev(1:(number_of_specs - 1)), function(x)
     GetComboCounts(gene_counts, x, out_csv))
-
