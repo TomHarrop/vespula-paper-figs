@@ -5,13 +5,13 @@ library(ggplot2)
 
 set.seed(14)
 
-gene_counts_wide <- fread("data/Orthogroups.GeneCount.tsv")
+gene_counts_wide <- fread("data/Orthogroups.GeneCount.final.tsv")
 pan_core_counts <- fread(cmd = paste("zcat",
                                      "output/plot_data/pan_core_counts.csv.gz"))
 
 # count the number in all species
 gene_counts_wide[, Total := NULL]
-gene_counts_wide[, Dmel := NULL]
+gene_counts_wide[, Drosophila_melanogaster := NULL]
 gene_counts <- melt(gene_counts_wide,
                     id.vars = "Orthogroup",
                     variable.name = "spec_code",
