@@ -74,11 +74,11 @@ print(paste("Starting from spec_no", number_of_specs - 1))
 # try to handle amount of memory - it's split across cores, so need to use
 # fewer cores when number_of_specs results in a lot of comparisons.
 if (number_of_specs < 20 & number_of_specs > 10){
-    plan(multiprocess(workers = 100))    
+    plan(multiprocess(workers = 50))    
 } else if(number_of_specs < 10) {
-    plan(multiprocess(workers = 50))
-} else {
     plan(multiprocess(workers = 20))
+} else {
+    plan(multiprocess(workers = 100))
 }
 
 options(future.globals.maxSize = +Inf)
