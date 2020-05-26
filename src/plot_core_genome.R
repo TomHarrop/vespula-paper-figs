@@ -6,7 +6,8 @@ library(ggplot2)
 set.seed(14)
 
 gene_counts_wide <- fread("data/Orthogroups.GeneCount.tsv")
-pan_core_counts <- fread("output/plot_data/pan_core_counts.csv.gz")
+pan_core_counts <- fread(cmd = paste("zcat",
+                                     "output/plot_data/pan_core_counts.csv.gz"))
 
 # count the number in all species
 gene_counts_wide[, Total := NULL]
