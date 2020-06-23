@@ -47,7 +47,7 @@ ideogram <- ggplot(assembly_pd, aes(x = name,
 
 
 # synteny plot
-syn_file <- "data/img/Fig 2 size.png"
+syn_file <- "data/img/Figure2.jpg"
 # syn_file <- magick::image_read_svg("data/img/Fig 2 size.svg")
 synteny <- draw_image(syn_file,
                       x = 0.5,
